@@ -46,11 +46,12 @@ protected:
   std::map<std::string, std::string> m_config;
 
   const std::vector<std::string> m_app_dirs = {
-      "/usr/share/applications", "/usr/local/share/applications",
+      "/usr/share/applications",
+      "/usr/local/share/applications",
       Glib::get_home_dir() + "/.local/share/applications",
       "/var/lib/snapd/desktop/applications",
-      Glib::get_home_dir() +
-          "/.local/share/flatpak/exports/share/applications"};
+      Glib::get_home_dir() + "/.local/share/flatpak/exports/share/applications",
+      "/var/lib/flatpak/exports/share/applications"};
 };
 
 #endif

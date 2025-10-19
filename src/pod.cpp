@@ -4,6 +4,7 @@
 
 PodLauncher::PodLauncher()
     : m_main_box(Gtk::ORIENTATION_VERTICAL), m_columns() {
+
   set_title("pod");
   set_default_size(600, 400);
   set_position(Gtk::WIN_POS_CENTER);
@@ -13,7 +14,7 @@ PodLauncher::PodLauncher()
 
   load_config();
 
-  // Setup UI
+  // ui
   add(m_main_box);
   m_main_box.set_spacing(5);
   m_main_box.set_margin_top(10);
@@ -21,7 +22,7 @@ PodLauncher::PodLauncher()
   m_main_box.set_margin_left(10);
   m_main_box.set_margin_right(10);
 
-  // Apply styling
+  // ui styling
   auto css_provider = Gtk::CssProvider::create();
   std::string font_family =
       m_config.count("font") ? m_config["font"] : "Monospace";
@@ -45,11 +46,13 @@ PodLauncher::PodLauncher()
     std::cerr << "CSS error: " << ex.what() << std::endl;
   }
 
-  // Entry
+  // entry
   m_main_box.pack_start(m_entry, Gtk::PACK_SHRINK);
   m_entry.set_placeholder_text("Type to search applications...");
   m_entry.signal_changed().connect(
       sigc::mem_fun(*this, &PodLauncher::on_entry_changed));
+
+  // enter key handler
   m_entry.signal_activate().connect([this]() {
     auto selection = m_tree_view.get_selection();
     Gtk::TreeModel::iterator iter = selection->get_selected();
@@ -58,7 +61,7 @@ PodLauncher::PodLauncher()
     }
   });
 
-  // TreeView
+  // treeView
   m_columns.add(m_col_name);
   m_columns.add(m_col_exec);
   m_columns.add(m_col_icon);
@@ -67,7 +70,7 @@ PodLauncher::PodLauncher()
   m_tree_view.set_model(m_list_store);
   m_tree_view.set_headers_visible(false);
 
-  // Icon column
+  // icon column
   Gtk::CellRendererPixbuf *icon_renderer =
       Gtk::manage(new Gtk::CellRendererPixbuf());
   Gtk::TreeViewColumn *icon_column =
@@ -76,7 +79,7 @@ PodLauncher::PodLauncher()
   icon_column->set_fixed_width(32);
   m_tree_view.append_column(*icon_column);
 
-  // Name column
+  // name column
   Gtk::CellRendererText *name_renderer =
       Gtk::manage(new Gtk::CellRendererText());
   Gtk::TreeViewColumn *name_column =
@@ -88,7 +91,7 @@ PodLauncher::PodLauncher()
   m_tree_view.signal_row_activated().connect(
       sigc::mem_fun(*this, &PodLauncher::on_row_activated));
 
-  // Scrolled window
+  // scrolled window
   m_scrolled_window.add(m_tree_view);
   m_scrolled_window.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
   m_main_box.pack_start(m_scrolled_window);
