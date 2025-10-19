@@ -50,6 +50,13 @@ PodLauncher::PodLauncher()
   m_entry.set_placeholder_text("Type to search applications...");
   m_entry.signal_changed().connect(
       sigc::mem_fun(*this, &PodLauncher::on_entry_changed));
+  m_entry.signal_activate().connect([this]() {
+    auto selection = m_tree_view.get_selection();
+    Gtk::TreeModel::iterator iter = selection->get_selected();
+    if (iter) {
+      on_row_activated(m_list_store->get_path(iter), nullptr);
+    }
+  });
 
   // TreeView
   m_columns.add(m_col_name);
