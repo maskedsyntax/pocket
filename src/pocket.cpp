@@ -1,11 +1,12 @@
-#include "pod.h"
+#include "pocket.h"
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 
-PodLauncher::PodLauncher()
+PocketLauncher::PocketLauncher()
     : m_main_box(Gtk::ORIENTATION_VERTICAL), m_columns() {
 
-  set_title("pod");
+  set_title("pocket");
   set_default_size(600, 400);
   set_position(Gtk::WIN_POS_CENTER);
   set_decorated(false);
@@ -50,7 +51,7 @@ PodLauncher::PodLauncher()
   m_main_box.pack_start(m_entry, Gtk::PACK_SHRINK);
   m_entry.set_placeholder_text("Type to search applications...");
   m_entry.signal_changed().connect(
-      sigc::mem_fun(*this, &PodLauncher::on_entry_changed));
+      sigc::mem_fun(*this, &PocketLauncher::on_entry_changed));
 
   // enter key handler
   m_entry.signal_activate().connect([this]() {
@@ -89,7 +90,7 @@ PodLauncher::PodLauncher()
   m_tree_view.append_column(*name_column);
 
   m_tree_view.signal_row_activated().connect(
-      sigc::mem_fun(*this, &PodLauncher::on_row_activated));
+      sigc::mem_fun(*this, &PocketLauncher::on_row_activated));
 
   // scrolled window
   m_scrolled_window.add(m_tree_view);
@@ -100,10 +101,10 @@ PodLauncher::PodLauncher()
   show_all_children();
 }
 
-PodLauncher::~PodLauncher() {}
+PocketLauncher::~PocketLauncher() {}
 
-void PodLauncher::load_config() {
-  std::string config_file = Glib::get_home_dir() + "/.config/pod/podrc";
+void PocketLauncher::load_config() {
+  std::string config_file = Glib::get_home_dir() + "/.config/pocket/pocketrc";
   m_config = {{"font", "JetBrains Mono"}, {"font-size", "12"}, {"icon", ""}};
 
   std::ifstream file(config_file);
@@ -125,7 +126,7 @@ void PodLauncher::load_config() {
   }
 }
 
-void PodLauncher::load_applications() {
+void PocketLauncher::load_applications() {
   for (const auto &dir : m_app_dirs) {
     if (std::filesystem::exists(dir))
       scan_directory(dir);
@@ -135,7 +136,7 @@ void PodLauncher::load_applications() {
   filter_apps();
 }
 
-void PodLauncher::scan_directory(const std::filesystem::path &dir) {
+void PocketLauncher::scan_directory(const std::filesystem::path &dir) {
   try {
     for (const auto &entry : std::filesystem::directory_iterator(dir)) {
       if (entry.is_regular_file() && entry.path().extension() == ".desktop") {
@@ -147,7 +148,8 @@ void PodLauncher::scan_directory(const std::filesystem::path &dir) {
   }
 }
 
-void PodLauncher::parse_desktop_file(const std::filesystem::path &file_path) {
+void PocketLauncher::parse_desktop_file(
+    const std::filesystem::path &file_path) {
   std::ifstream file(file_path);
   if (!file.is_open())
     return;
@@ -198,7 +200,7 @@ void PodLauncher::parse_desktop_file(const std::filesystem::path &file_path) {
   m_all_apps.push_back(app);
 }
 
-void PodLauncher::filter_apps() {
+void PocketLauncher::filter_apps() {
   std::string search_text = m_entry.get_text();
   std::transform(search_text.begin(), search_text.end(), search_text.begin(),
                  ::tolower);
@@ -253,10 +255,10 @@ void PodLauncher::filter_apps() {
   }
 }
 
-void PodLauncher::on_entry_changed() { filter_apps(); }
+void PocketLauncher::on_entry_changed() { filter_apps(); }
 
-void PodLauncher::on_row_activated(const Gtk::TreeModel::Path &path,
-                                   Gtk::TreeViewColumn *column) {
+void PocketLauncher::on_row_activated(const Gtk::TreeModel::Path &path,
+                                      Gtk::TreeViewColumn *column) {
   auto iter = m_list_store->get_iter(path);
   if (iter) {
     Gtk::TreeModel::Row row = *iter;
@@ -267,7 +269,7 @@ void PodLauncher::on_row_activated(const Gtk::TreeModel::Path &path,
   }
 }
 
-bool PodLauncher::on_key_press_event(GdkEventKey *event) {
+bool PocketLauncher::on_key_press_event(GdkEventKey *event) {
   if (event->keyval == GDK_KEY_Escape)
     hide();
   return Gtk::Window::on_key_press_event(event);

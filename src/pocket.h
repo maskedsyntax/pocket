@@ -1,5 +1,5 @@
-#ifndef POD_H
-#define POD_H
+#ifndef POCKET_H
+#define POCKET_H
 
 #include <filesystem>
 #include <fstream>
@@ -14,10 +14,10 @@ struct AppInfo {
   std::string icon;
 };
 
-class PodLauncher : public Gtk::Window {
+class PocketLauncher : public Gtk::Window {
 public:
-  PodLauncher();
-  virtual ~PodLauncher();
+  PocketLauncher();
+  virtual ~PocketLauncher();
 
 protected:
   bool on_key_press_event(GdkEventKey *event) override;
