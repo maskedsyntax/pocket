@@ -1,7 +1,5 @@
 <div align="center">
-  <!-- <p align="center"> -->
-    <img src="./assets/pocket.svg" alt="FuzzyBunny Logo" width="150" />
-  <!-- </p> -->
+  <img src="./assets/pocket.svg" alt="Pocket Logo" width="150" />
   <h1>Pocket</h1> 
   
   **Pocket** is a lightweight application launcher built with **C++** and **GTK**.  
@@ -9,6 +7,12 @@
 </div>
 
 ---
+
+## Screenshot
+
+<div align="center">
+  <img src="./assets/pocket-ss.png" alt="Pocket Screenshot" width="540" />
+</div>
 
 ## Dependencies
 
