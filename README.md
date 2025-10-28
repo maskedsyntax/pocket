@@ -11,7 +11,7 @@
 ## Screenshot
 
 <div align="center">
-  <img src="./assets/pocket-ss.png" alt="Pocket Screenshot" width="540" />
+  <img src="./assets/pocket-ss.png" alt="Pocket Screenshot" width="720" />
 </div>
 
 ## Dependencies
