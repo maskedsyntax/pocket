@@ -196,6 +196,7 @@ func Run() {
 	w.SetContent(content)
 
 	w.Show()
+	w.Canvas().Focus(entry)
 	a.Run()
 }
 
