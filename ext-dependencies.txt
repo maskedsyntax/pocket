@@ -1,0 +1,3 @@
+sudo apt install -y \
+    libgl1-mesa-dev xorg-dev \
+    libwayland-dev libxkbcommon-dev
