@@ -3,7 +3,7 @@
 #include "pocket.h"
 #include "config.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     auto app = Gtk::Application::create(argc, argv, "com.maskedsyntax.pocket");
 
     auto config = load_pocket_config();

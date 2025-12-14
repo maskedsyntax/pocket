@@ -9,50 +9,48 @@
 #include <vector>
 
 struct AppInfo {
-  std::string name;
-  std::string exec;
-  std::string icon;
+    std::string name;
+    std::string exec;
+    std::string icon;
 };
 
 class PocketLauncher : public Gtk::Window {
-public:
-  PocketLauncher(const std::map<std::string, std::string>& config);
-  virtual ~PocketLauncher();
+  public:
+    PocketLauncher(const std::map<std::string, std::string>& config);
+    virtual ~PocketLauncher();
 
-protected:
-  bool on_key_press_event(GdkEventKey *event) override;
-  void on_entry_changed();
-  void on_row_activated(const Gtk::TreeModel::Path &path,
-                        Gtk::TreeViewColumn *column);
+  protected:
+    bool on_key_press_event(GdkEventKey* event) override;
+    void on_entry_changed();
+    void on_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
 
-  void load_config();
-  void load_applications();
-  void scan_directory(const std::filesystem::path &dir);
-  void parse_desktop_file(const std::filesystem::path &file_path);
-  void filter_apps();
+    void load_config();
+    void load_applications();
+    void scan_directory(const std::filesystem::path& dir);
+    void parse_desktop_file(const std::filesystem::path& file_path);
+    void filter_apps();
 
-  Gtk::Box m_main_box;
-  Gtk::Entry m_entry;
-  Gtk::ScrolledWindow m_scrolled_window;
-  Gtk::TreeView m_tree_view;
+    Gtk::Box m_main_box;
+    Gtk::Entry m_entry;
+    Gtk::ScrolledWindow m_scrolled_window;
+    Gtk::TreeView m_tree_view;
 
-  Glib::RefPtr<Gtk::ListStore> m_list_store;
-  Gtk::TreeModel::ColumnRecord m_columns;
-  Gtk::TreeModelColumn<Glib::ustring> m_col_name;
-  Gtk::TreeModelColumn<Glib::ustring> m_col_exec;
-  Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_col_icon;
+    Glib::RefPtr<Gtk::ListStore> m_list_store;
+    Gtk::TreeModel::ColumnRecord m_columns;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_exec;
+    Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_col_icon;
 
-  std::vector<AppInfo> m_all_apps;
-  std::map<std::string, std::string> m_config;
+    std::vector<AppInfo> m_all_apps;
+    std::map<std::string, std::string> m_config;
 
-  const std::vector<std::string> m_app_dirs = {
-      "/usr/share/applications",
-      "/usr/local/share/applications",
-      Glib::get_home_dir() + "/.local/share/applications",
-      "/var/lib/snapd/desktop/applications",
-      Glib::get_home_dir() + "/.local/share/flatpak/exports/share/applications",
-      "/var/lib/flatpak/exports/share/applications"
-  };
+    const std::vector<std::string> m_app_dirs = {
+        "/usr/share/applications",
+        "/usr/local/share/applications",
+        Glib::get_home_dir() + "/.local/share/applications",
+        "/var/lib/snapd/desktop/applications",
+        Glib::get_home_dir() + "/.local/share/flatpak/exports/share/applications",
+        "/var/lib/flatpak/exports/share/applications"};
 };
 
 #endif

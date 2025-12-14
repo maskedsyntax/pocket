@@ -4,10 +4,7 @@
 
 std::map<std::string, std::string> load_pocket_config() {
     std::map<std::string, std::string> config = {
-        {"font", "Monospace"},
-        {"font-size", "12"},
-        {"icon-theme", ""}
-    };
+        {"font", "Monospace"}, {"font-size", "12"}, {"icon-theme", ""}};
 
     std::string path = Glib::get_home_dir() + "/.config/pocket/pocketrc";
     std::ifstream file(path);
@@ -17,7 +14,8 @@ std::map<std::string, std::string> load_pocket_config() {
     std::string line;
     while (std::getline(file, line)) {
         auto pos = line.find(':');
-        if (pos == std::string::npos) continue;
+        if (pos == std::string::npos)
+            continue;
 
         std::string key = line.substr(0, pos);
         std::string value = line.substr(pos + 1);
