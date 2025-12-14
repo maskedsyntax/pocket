@@ -37,6 +37,20 @@ Make sure you have all dependencies installed, then simply run:
 ./build.sh
 ```
 
+## Configuration (pocketrc)
+Pocket can be customized using a simple configuration file located at:
+```bash
+~/.config/pocket/pocketrc
+```
+### Example `pocketrc`
+```
+font: JetBrainsMono
+font-size: 12
+icon-theme: Papirus
+```
+
+If the configuration file is missing or a value is not specified, Pocket falls back to sensible defaults.
+
 ## License
 
 This project is licensed under the [**MIT License**](./LICENSE).
