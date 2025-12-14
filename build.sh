@@ -17,3 +17,8 @@ else
     echo "Build failed!"
     exit 1
 fi
+
+echo "Installing Pocket..."
+sudo install -m 755 bin/pocket /usr/local/bin/pocket
+
+echo "Done. Run with: pocket"
