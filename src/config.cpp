@@ -4,9 +4,9 @@
 
 std::map<std::string, std::string> load_pocket_config() {
     std::map<std::string, std::string> config = {
-        {"font", "JetBrains Mono"},
+        {"font", "Monospace"},
         {"font-size", "12"},
-        {"icon-theme", "Papirus"}
+        {"icon-theme", ""}
     };
 
     std::string path = Glib::get_home_dir() + "/.config/pocket/pocketrc";

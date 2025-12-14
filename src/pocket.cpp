@@ -121,7 +121,7 @@ PocketLauncher::~PocketLauncher() {}
 
 void PocketLauncher::load_config() {
   std::string config_file = Glib::get_home_dir() + "/.config/pocket/pocketrc";
-  m_config = {{"font", "JetBrains Mono"}, {"font-size", "12"}, {"icon", ""}};
+  m_config = {{"font", "Monospace"}, {"font-size", "12"}, {"icon", ""}};
 
   std::ifstream file(config_file);
   if (!file.is_open())
