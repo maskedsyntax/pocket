@@ -16,7 +16,7 @@ struct AppInfo {
 
 class PocketLauncher : public Gtk::Window {
 public:
-  PocketLauncher();
+  PocketLauncher(const std::map<std::string, std::string>& config);
   virtual ~PocketLauncher();
 
 protected:

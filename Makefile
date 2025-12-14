@@ -18,9 +18,9 @@ CXX = g++
 CXXFLAGS = -std=c++17 `pkg-config --cflags gtkmm-3.0` -Wall
 LDFLAGS = `pkg-config --libs gtkmm-3.0`
 TARGET = bin/pocket
-SOURCES = src/main.cpp src/pocket.cpp
+SOURCES = src/main.cpp src/pocket.cpp src/config.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
-HEADERS = src/pocket.h
+HEADERS = src/pocket.h src/config.h
 
 $(TARGET): $(OBJECTS) | bin
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
@@ -35,4 +35,3 @@ clean:
 	rm -f $(OBJECTS) $(TARGET)
 
 .PHONY: clean
-

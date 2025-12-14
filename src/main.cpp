@@ -1,15 +1,18 @@
-#include "gtkmm/settings.h"
-#include "pocket.h"
 #include <gtkmm/application.h>
+#include <gtkmm/settings.h>
+#include "pocket.h"
+#include "config.h"
 
 int main(int argc, char *argv[]) {
-  auto app = Gtk::Application::create(argc, argv, "com.maskedsyntax.pocket");
+    auto app = Gtk::Application::create(argc, argv, "com.maskedsyntax.pocket");
 
-  auto settings = Gtk::Settings::get_default();
-  if (settings) {
-      settings->property_gtk_icon_theme_name() = "Papirus";
-  }
+    auto config = load_pocket_config();
 
-  PocketLauncher launcher;
-  return app->run(launcher);
+    auto settings = Gtk::Settings::get_default();
+    if (settings && config.count("icon-theme")) {
+        settings->property_gtk_icon_theme_name() = config["icon-theme"];
+    }
+
+    PocketLauncher launcher(config);
+    return app->run(launcher);
 }
