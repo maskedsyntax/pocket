@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 PocketLauncher::PocketLauncher()
     : m_main_box(Gtk::ORIENTATION_VERTICAL), m_columns() {
@@ -14,6 +15,9 @@ PocketLauncher::PocketLauncher()
   set_keep_above(true);
 
   load_config();
+
+  // auto icon_theme = Gtk::IconTheme::get_default();
+  // icon_theme->set_custom_theme("Papirus");
 
   // ui
   add(m_main_box);
@@ -30,9 +34,16 @@ PocketLauncher::PocketLauncher()
   int font_size =
       m_config.count("font-size") ? std::stoi(m_config["font-size"]) : 12;
 
+
+  std::cout << font_family << std::endl;
   std::string css = "window { background-color: rgba(40, 40, 40, 0.95); }";
-  css += "entry, treeview { font: " + std::to_string(font_size) + "px '" +
-         font_family + "'; }";
+  // css += "entry, treeview { font: " + std::to_string(font_size) + "px '" +
+  //        font_family + "'; }";
+  css += "entry, treeview, treeview.view, label { "
+         "font-family: '" + font_family + "'; "
+         "font-size: " + std::to_string(font_size) + "px; "
+         "}";
+
   css += "entry { background: rgba(60, 60, 60, 0.9); color: white; border: 1px "
          "solid #555; border-radius: 5px; padding: 8px; }";
   css += "treeview { background: rgba(50, 50, 50, 0.9); color: white; }";
@@ -83,6 +94,7 @@ PocketLauncher::PocketLauncher()
   // name column
   Gtk::CellRendererText *name_renderer =
       Gtk::manage(new Gtk::CellRendererText());
+      name_renderer->property_font() = font_family + " " + std::to_string(font_size);
   Gtk::TreeViewColumn *name_column =
       Gtk::manage(new Gtk::TreeViewColumn("Name", *name_renderer));
   name_column->add_attribute(name_renderer->property_text(), m_col_name);

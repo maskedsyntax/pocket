@@ -2,7 +2,7 @@
 #define POCKET_H
 
 #include <filesystem>
-#include <fstream>
+// #include <fstream>
 #include <gtkmm.h>
 #include <map>
 #include <string>
@@ -51,7 +51,8 @@ protected:
       Glib::get_home_dir() + "/.local/share/applications",
       "/var/lib/snapd/desktop/applications",
       Glib::get_home_dir() + "/.local/share/flatpak/exports/share/applications",
-      "/var/lib/flatpak/exports/share/applications"};
+      "/var/lib/flatpak/exports/share/applications"
+  };
 };
 
 #endif
