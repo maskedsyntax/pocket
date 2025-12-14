@@ -29,13 +29,23 @@ Pocket depends on the following packages:
 sudo apt install g++ make pkg-config libgtkmm-3.0-dev
 ```
 
-## Build and Run
+## Build and Install
 
 Make sure you have all dependencies installed, then simply run:
 
 ```bash
 ./build.sh
 ```
+
+This will build `pocket` and install the binary to `/usr/local/bin`. 
+You may be prompted for your password during installation.
+
+After installation, you can launch `pocket` from anywhere using:
+```bash
+pocket
+```
+
+Bind `pocket` to a keyboard shortcut in your window manager or desktop environment for quick access.
 
 ## Configuration (pocketrc)
 Pocket can be customized using a simple configuration file located at:
