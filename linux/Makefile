@@ -15,7 +15,7 @@
 
 
 CXX = g++
-CXXFLAGS = -std=c++17 `pkg-config --cflags gtkmm-3.0` -Wall
+CXXFLAGS = -std=c++17 -O2 `pkg-config --cflags gtkmm-3.0` -Wall
 LDFLAGS = `pkg-config --libs gtkmm-3.0`
 TARGET = bin/pocket
 SOURCES = src/main.cpp src/pocket.cpp src/config.cpp
