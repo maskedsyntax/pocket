@@ -101,7 +101,7 @@ sudo apt install g++ make pkg-config libgtkmm-3.0-dev
 ./linux/build.sh
 ```
 
-This builds `pocket` and installs the binary to `/usr/local/bin`. You may be prompted for your password during installation.
+This builds `pocket`, installs the binary to `/usr/local/bin`, adds an autostart entry (`~/.config/autostart/pocket.desktop`) and starts Pocket in the background. You may be prompted for your password during installation.
 
 Then launch it from anywhere:
 
@@ -111,11 +111,13 @@ pocket
 
 Bind `pocket` to a keyboard shortcut in your window manager or desktop environment for quick access.
 
+Pocket stays running after its window closes, so later `pocket` calls just bring the existing window back instead of starting from scratch. `pocket --background` starts it without showing the window, which is what the autostart entry does. New or removed apps are picked up the next time the window opens. To stop it, run `pkill -x pocket`.
+
 ---
 
 ## Configuration (pocketrc)
 
-Both versions read `~/.config/pocket/pocketrc`. Each one ignores keys it doesn't use, so you can share one file between machines. If the file is missing or a value isn't set, Pocket falls back to sensible defaults.
+Both versions read `~/.config/pocket/pocketrc`. On Linux, changes apply the next time the window opens. Each one ignores keys it doesn't use, so you can share one file between machines. If the file is missing or a value isn't set, Pocket falls back to sensible defaults.
 
 On macOS, **Edit Config…** in the menu bar creates a commented template for you.
 
@@ -125,31 +127,40 @@ On macOS, **Edit Config…** in the menu bar creates a commented template for yo
 # shared
 font: JetBrains Mono
 font-size: 22
+accent: #7C5CFF       # highlight colour for the selected row
+max-results: 60
 
 # macOS
 style: glass          # glass | blur | solid
 appearance: auto      # auto | dark | light
 hotkey: cmd+space     # e.g. alt+space, ctrl+shift+p
-accent: #7C5CFF       # highlight colour for the selected row
 menubar-icon: true
-max-results: 60
 app-dirs: ~/Dev/Apps
 
 # Linux
 icon-theme: Papirus
+width: 600
+height: 400
+background: rgba(40, 40, 40, 0.95)
+foreground: #ffffff
 ```
+
+Lines starting with `#` are comments, and so is anything after a `#` that follows a space. A colour value like `#7C5CFF` is safe because nothing comes before it.
 
 | Key | Platform | Default | Description |
 | --- | --- | --- | --- |
 | `font` | both | `Monospace` (Linux), SF Pro (macOS) | Font family. On macOS the app picks the right weights from the family automatically. |
 | `font-size` | both | `12` (Linux), `22` (macOS) | Search text size. On macOS the rest of the type scale is derived from it. |
 | `icon-theme` | Linux | GTK default | GTK icon theme |
+| `width` / `height` | Linux | `600` / `400` | Window size in pixels |
+| `background` | Linux | `rgba(40, 40, 40, 0.95)` | Window colour. Any CSS colour (`#rrggbb`, `rgb()`, `rgba()`, names); alpha below 1 is translucent when a compositor is running. |
+| `foreground` | Linux | `#ffffff` | Text colour. The search box and list are tinted from it, so they follow light or dark backgrounds. |
 | `style` | macOS | `glass` | `glass`, `blur`, or `solid` |
 | `appearance` | macOS | `auto` | Follow the system, or force `dark` / `light` |
 | `hotkey` | macOS | `cmd+space` | Modifiers `cmd`, `alt`/`opt`, `ctrl`, `shift` plus a key (`space`, `a`–`z`, `0`–`9`, `f1`–`f12`, …) |
-| `accent` | macOS | subtle grey | Hex colour for the selected row |
+| `accent` | both | subtle grey (macOS), `#3465a4` (Linux) | Colour for the selected row |
 | `menubar-icon` | macOS | `true` | Show the menu bar icon. If it's hidden, quit Pocket with `killall Pocket`. |
-| `max-results` | macOS | `60` | Maximum number of search results (the empty view always lists every app) |
+| `max-results` | both | `60` (macOS), unlimited (Linux) | Maximum number of search results (the empty view always lists every app) |
 | `app-dirs` | macOS | none | Extra comma-separated folders to scan for `.app` bundles |
 
 ## License
