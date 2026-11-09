@@ -7,6 +7,7 @@ struct AppEntry: Identifiable, Hashable {
     /// display name is localized ("Calculator" vs "Rechner").
     let aliases: [String]
     let location: String
+    let bundleID: String?
 
     var id: String { url.path }
 }
@@ -38,8 +39,15 @@ enum AppIndex {
             return "System · Core Services"
         case home + "/Applications": return "Home · Applications"
         default:
+            // Finder hides ".localized" on folder names ("Chrome Apps.localized"), so do we.
+            func clean(_ name: Substring) -> String {
+                name.hasSuffix(".localized") ? String(name.dropLast(".localized".count)) : String(name)
+            }
             if folder.hasPrefix("/Applications/") {
-                return "Applications › " + folder.dropFirst("/Applications/".count)
+                return "Applications › " + clean(folder.dropFirst("/Applications/".count))
+            }
+            if folder.hasPrefix(home + "/Applications/") {
+                return "Home › " + clean(folder.dropFirst((home + "/Applications/").count))
             }
             return folder.replacingOccurrences(of: home, with: "~")
         }
@@ -70,7 +78,9 @@ enum AppIndex {
                 aliases.append(bundleName)
             }
 
-            apps.append(AppEntry(url: url, name: name, aliases: aliases, location: location))
+            apps.append(AppEntry(
+                    url: url, name: name, aliases: aliases, location: location,
+                    bundleID: bundle?.bundleIdentifier))
         }
 
         for dir in defaultDirs + extraDirs {
