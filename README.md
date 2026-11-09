@@ -8,10 +8,20 @@
 
 ---
 
-## Screenshot
+## Screenshots
+
+### macOS
 
 <div align="center">
-  <img src="./assets/pocket-ss.png" alt="Pocket Screenshot" width="720" />
+  <img src="./assets/pocket-macos.png" alt="Pocket on macOS: search results with the matched letters in bold" width="680" />
+  <br />
+  <img src="./assets/pocket-macos-calculator.png" alt="Pocket on macOS: the built-in calculator" width="680" />
+</div>
+
+### Linux
+
+<div align="center">
+  <img src="./assets/pocket-ss.png" alt="Pocket on Linux" width="600" />
 </div>
 
 ## Repository layout
