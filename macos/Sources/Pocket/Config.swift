@@ -14,7 +14,7 @@ struct Config {
     }
 
     var font: String?
-    var fontSize: CGFloat = 22
+    var fontSize: CGFloat = 18
     var style: Style = .glass
     var appearance: Appearance = .auto
     var hotkey = "cmd+space"
@@ -22,6 +22,8 @@ struct Config {
     var menubarIcon = true
     var maxResults = 60
     var appDirs: [String] = []
+    /// Where "Search the web" goes when nothing matches; `%s` is the query.
+    var searchURL = "https://www.google.com/search?q=%s"
 
     static var directory: URL {
         FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/pocket")
@@ -32,18 +34,26 @@ struct Config {
     }
 
     static func load() -> Config {
-        var config = Config()
         guard let text = try? String(contentsOf: path, encoding: .utf8) else {
-            return config
+            return Config()
         }
+        return parse(text)
+    }
 
+    static func parse(_ text: String) -> Config {
+        var config = Config()
         for line in text.split(whereSeparator: \.isNewline) {
             let line = line.trimmingCharacters(in: .whitespaces)
             if line.isEmpty || line.hasPrefix("#") { continue }
             guard let colon = line.firstIndex(of: ":") else { continue }
 
             let key = line[..<colon].trimmingCharacters(in: .whitespaces).lowercased()
-            let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+            var value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+            // A "#" after whitespace starts a comment ("style: blur   # glass | blur");
+            // a value that starts with "#" (a colour like "#7C5CFF") is kept.
+            if let comment = value.range(of: #"\s#"#, options: .regularExpression) {
+                value = value[..<comment.lowerBound].trimmingCharacters(in: .whitespaces)
+            }
             if value.isEmpty { continue }
 
             switch key {
@@ -69,6 +79,8 @@ struct Config {
                 config.appDirs = value.split(separator: ",").map {
                     NSString(string: $0.trimmingCharacters(in: .whitespaces)).expandingTildeInPath
                 }
+            case "search-url":
+                if value.contains("%s") { config.searchURL = value }
             default:
                 break
             }
@@ -118,7 +130,7 @@ struct Config {
 
         # --- shared ---
         # font: JetBrains Mono
-        # font-size: 22
+        # font-size: 18
 
         # --- macOS ---
         # style: glass          # glass | blur | solid
@@ -128,6 +140,7 @@ struct Config {
         # menubar-icon: true
         # max-results: 60
         # app-dirs: ~/Dev/Apps, /Volumes/Tools/Applications
+        # search-url: https://duckduckgo.com/?q=%s   # used when nothing matches
 
         # --- Linux ---
         # icon-theme: Papirus

@@ -26,6 +26,61 @@ enum Matcher {
         return fuzzy(Array(q), Array(t), words: words)
     }
 
+    /// Character offsets in `name` to highlight for `query`, following the same
+    /// tiers as `score` so the highlight shows why an app matched.
+    static func highlights(query: String, name: String) -> Set<Int> {
+        let q = Array(query.lowercased())
+        let chars = Array(name)
+        let lower = chars.map { ch -> Character in
+            let s = ch.lowercased()
+            return s.count == 1 ? Character(s) : ch
+        }
+        guard !q.isEmpty, q.count <= lower.count else { return [] }
+
+        func run(from start: Int) -> Set<Int> { Set(start..<(start + q.count)) }
+        func matches(at start: Int) -> Bool {
+            start + q.count <= lower.count && Array(lower[start..<(start + q.count)]) == q
+        }
+
+        if matches(at: 0) { return run(from: 0) }  // exact, prefix
+
+        let starts = wordStarts(chars)
+        if let start = starts.first(where: matches) { return run(from: start) }  // word prefix
+
+        if q.count > 1, starts.count >= q.count,
+            zip(starts, q).allSatisfy({ lower[$0] == $1 })
+        {
+            return Set(starts.prefix(q.count))  // initials
+        }
+
+        if let start = (0...(lower.count - q.count)).first(where: matches) {
+            return run(from: start)  // substring
+        }
+
+        // Fuzzy: the same greedy in-order walk as `fuzzy`.
+        var hits = Set<Int>()
+        var ti = 0
+        for ch in q {
+            while ti < lower.count, lower[ti] != ch { ti += 1 }
+            guard ti < lower.count else { return [] }
+            hits.insert(ti)
+            ti += 1
+        }
+        return hits
+    }
+
+    /// Offsets where each word of `splitWords` begins.
+    private static func wordStarts(_ chars: [Character]) -> [Int] {
+        var starts: [Int] = []
+        for (i, ch) in chars.enumerated() where ch.isLetter || ch.isNumber {
+            let previous = i > 0 ? chars[i - 1] : nil
+            let afterSeparator = previous.map { !$0.isLetter && !$0.isNumber } ?? true
+            let camelHump = ch.isUppercase && (previous?.isLowercase ?? false)
+            if afterSeparator || camelHump { starts.append(i) }
+        }
+        return starts
+    }
+
     /// Splits on separators and camelCase humps: "OBS-Studio" → ["obs", "studio"],
     /// "FaceTime" → ["face", "time"].
     private static func splitWords(_ name: String) -> [String] {

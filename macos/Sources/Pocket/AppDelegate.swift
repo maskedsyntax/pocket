@@ -11,9 +11,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ note: Notification) {
         applyConfig()
-        if CommandLine.arguments.contains("--show") {
+        let args = CommandLine.arguments
+        if args.contains("--show") {
             controller?.show()
         }
+        #if DEBUG
+            // Development aids for previewing states: --query "2+2", --actions, --command.
+            if let i = args.firstIndex(of: "--query"), args.indices.contains(i + 1) {
+                controller?.model.query = args[i + 1]
+            }
+            if args.contains("--actions") { controller?.model.toggleActions() }
+            if args.contains("--command") { controller?.model.commandHeld = true }
+        #endif
     }
 
     /// Launching Pocket again while it's running (e.g. `open -a Pocket`) opens the panel.

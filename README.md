@@ -35,6 +35,9 @@ Both versions read the same config file, `~/.config/pocket/pocketrc`.
 - **Glass UI**: Liquid Glass on macOS 26+, with a vibrancy blur fallback on older systems. `blur` and `solid` styles are available too.
 - Fuzzy search that understands prefixes, words ("code" → Visual Studio Code), initials ("vsc"), and loose subsequences
 - Learns which apps you open most and ranks them higher; recently used apps show first when the search box is empty
+- **Calculator**: type `12*(3+4)`, `200 + 10%`, `sqrt(2)` or `2^10` and the answer shows up as you type; `↵` copies it
+- Highlights the letters that matched, marks apps that are already running, and offers a web search when nothing matches
+- **Actions menu** (`⌘K`) for the selected result: Show in Finder, Copy Path, Hide or Quit a running app
 - Menu bar icon with Edit Config, Reload Config, and Launch at Login
 - No Dock icon, and no Accessibility permission needed
 
@@ -58,6 +61,8 @@ cd macos
 swift build && .build/debug/Pocket --show
 ```
 
+Debug builds also accept `--query "<text>"`, `--actions` and `--command` to open the panel with a search typed in, the actions menu open, or the `⌘1`–`⌘9` badges showing.
+
 ### Taking over ⌘ Space from Spotlight
 
 Spotlight owns ⌘ Space by default, so Pocket can't register it until you free it up:
@@ -75,10 +80,23 @@ To start Pocket when you log in, choose **Launch at Login** from the menu bar ic
 | Key | Action |
 | --- | --- |
 | `↑` / `↓`, `⌃N` / `⌃P`, `⌃J` / `⌃K` | Move selection |
-| `↵` | Open the selected app |
+| `↵` | Open the selected app (or copy a calculation's answer) |
+| `⌘K` | Show the actions for the selected result |
 | `⌘↵` | Show the app in Finder |
-| `⌘1` – `⌘9` | Open the nth result |
-| `esc` | Close |
+| `⌘⇧C` | Copy the app's path (or the whole calculation, e.g. `12*(3+4) = 84`) |
+| `⌘1` – `⌘9` | Open the nth result (hold `⌘` to see the numbers) |
+| `esc` | Close (or close the actions menu) |
+
+### Calculator
+
+Anything that looks like arithmetic is evaluated as you type:
+
+- Operators `+ - * / ^`, also `× ÷ **`, and `mod`; parentheses, with a missing `)` at the end filled in
+- Percentages: `15%`, `20% of 150`, and `200 + 10%` (= 220, like a pocket calculator)
+- Implicit multiplication (`2pi`, `3(4 + 1)`), `x` as times (`3 x 4`), factorial (`5!`), thousands separators (`1,500`), scientific notation (`2e3`)
+- Constants `pi` / `π`, `e`, `tau`, and functions `sqrt cbrt abs sin cos tan asin acos atan sinh cosh tanh ln log log2 exp round floor ceil` (trig uses radians)
+
+A bare number or constant (`42`, `pi`) isn't treated as a calculation, so it doesn't get in the way of searching for apps.
 
 ---
 
@@ -126,7 +144,7 @@ On macOS, **Edit Config…** in the menu bar creates a commented template for yo
 ```
 # shared
 font: JetBrains Mono
-font-size: 22
+font-size: 18
 accent: #7C5CFF       # highlight colour for the selected row
 max-results: 60
 
@@ -136,6 +154,7 @@ appearance: auto      # auto | dark | light
 hotkey: cmd+space     # e.g. alt+space, ctrl+shift+p
 menubar-icon: true
 app-dirs: ~/Dev/Apps
+search-url: https://duckduckgo.com/?q=%s
 
 # Linux
 icon-theme: Papirus
@@ -150,7 +169,7 @@ Lines starting with `#` are comments, and so is anything after a `#` that follow
 | Key | Platform | Default | Description |
 | --- | --- | --- | --- |
 | `font` | both | `Monospace` (Linux), SF Pro (macOS) | Font family. On macOS the app picks the right weights from the family automatically. |
-| `font-size` | both | `12` (Linux), `22` (macOS) | Search text size. On macOS the rest of the type scale is derived from it. |
+| `font-size` | both | `12` (Linux), `18` (macOS) | Search text size. On macOS the rest of the type scale is derived from it. |
 | `icon-theme` | Linux | GTK default | GTK icon theme |
 | `width` / `height` | Linux | `600` / `400` | Window size in pixels |
 | `background` | Linux | `rgba(40, 40, 40, 0.95)` | Window colour. Any CSS colour (`#rrggbb`, `rgb()`, `rgba()`, names); alpha below 1 is translucent when a compositor is running. |
@@ -162,6 +181,7 @@ Lines starting with `#` are comments, and so is anything after a `#` that follow
 | `menubar-icon` | macOS | `true` | Show the menu bar icon. If it's hidden, quit Pocket with `killall Pocket`. |
 | `max-results` | both | `60` (macOS), unlimited (Linux) | Maximum number of search results (the empty view always lists every app) |
 | `app-dirs` | macOS | none | Extra comma-separated folders to scan for `.app` bundles |
+| `search-url` | macOS | Google | Web search offered when nothing matches; `%s` is replaced by the query |
 
 ## License
 
