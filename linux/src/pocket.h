@@ -6,6 +6,7 @@
 #include <gtkmm.h>
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 struct AppInfo {
@@ -19,16 +20,35 @@ class PocketLauncher : public Gtk::Window {
     PocketLauncher(const std::map<std::string, std::string>& config);
     virtual ~PocketLauncher();
 
+    // Shows the (already built) window. Pocket stays resident between uses,
+    // so this is the hot path behind the hotkey.
+    void show_launcher();
+
   protected:
     bool on_key_press_event(GdkEventKey* event) override;
+    bool on_delete_event(GdkEventAny* event) override;
+    void hide_launcher();
     void on_entry_changed();
     void on_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
 
-    void load_config();
     void load_applications();
     void scan_directory(const std::filesystem::path& dir);
     void parse_desktop_file(const std::filesystem::path& file_path);
     void filter_apps();
+
+    // Config is re-read on show whenever pocketrc has changed on disk.
+    void apply_config();
+    void remember_config_mtime();
+    bool config_changed() const;
+    void reload_config_if_changed();
+    bool apps_changed() const;
+
+    // Icons are loaded once, off the critical path, and reused while filtering.
+    Glib::RefPtr<Gdk::Pixbuf> cached_icon(const std::string& name) const;
+    Glib::RefPtr<Gdk::Pixbuf> load_icon(const std::string& name);
+    void start_icon_loading();
+    bool load_icon_batch();
+    void refresh_icons();
 
     Gtk::Box m_main_box;
     Gtk::Entry m_entry;
@@ -40,9 +60,22 @@ class PocketLauncher : public Gtk::Window {
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
     Gtk::TreeModelColumn<Glib::ustring> m_col_exec;
     Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_col_icon;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_icon_name;
 
     std::vector<AppInfo> m_all_apps;
     std::map<std::string, std::string> m_config;
+
+    std::unordered_map<std::string, Glib::RefPtr<Gdk::Pixbuf>> m_icon_cache;
+    Glib::RefPtr<Gdk::Pixbuf> m_fallback_icon;
+    size_t m_icon_load_pos = 0;
+    size_t m_max_results = 0;
+    Glib::RefPtr<Gtk::CssProvider> m_css_provider;
+    Gtk::CellRendererText* m_name_renderer = nullptr;
+    std::filesystem::file_time_type m_config_mtime;
+    bool m_config_exists = false;
+    bool m_icon_theme_overridden = false;
+    sigc::connection m_icon_idle;
+    std::map<std::string, std::filesystem::file_time_type> m_dir_mtimes;
 
     const std::vector<std::string> m_app_dirs = {
         "/usr/share/applications",

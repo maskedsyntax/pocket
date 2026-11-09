@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Pocket
+Comment=Keep the Pocket launcher ready in the background
+Exec=pocket --background
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
