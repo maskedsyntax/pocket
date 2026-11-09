@@ -494,6 +494,10 @@ struct SearchField: NSViewRepresentable {
     func updateNSView(_ field: NSTextField, context: Context) {
         if field.stringValue != text {
             field.stringValue = text
+            // Text set from code would otherwise come out fully selected.
+            if let editor = field.currentEditor() {
+                editor.selectedRange = NSRange(location: (text as NSString).length, length: 0)
+            }
         }
     }
 
