@@ -51,6 +51,8 @@ enum AppIndex {
         var apps: [AppEntry] = []
 
         func add(_ url: URL) {
+            // Label by where the user sees the app, not where a symlink points.
+            let location = locationLabel(for: url.deletingLastPathComponent().path)
             let url = url.resolvingSymlinksInPath()
             let bundle = Bundle(url: url)
             let key = bundle?.bundleIdentifier ?? url.path
@@ -68,7 +70,6 @@ enum AppIndex {
                 aliases.append(bundleName)
             }
 
-            let location = locationLabel(for: url.deletingLastPathComponent().path)
             apps.append(AppEntry(url: url, name: name, aliases: aliases, location: location))
         }
 
@@ -77,15 +78,22 @@ enum AppIndex {
             guard
                 let enumerator = fm.enumerator(
                     at: root, includingPropertiesForKeys: [.isDirectoryKey],
-                    options: [.skipsHiddenFiles, .skipsPackageDescendants])
+                    options: [.skipsPackageDescendants])
             else { continue }
 
+            // Skip dotfiles by name rather than with `.skipsHiddenFiles`: macOS sets
+            // the `hidden` flag on symlinks to cryptex apps (e.g. /Applications/Safari.app),
+            // and that option would drop them.
+            //
+            // Only call skipDescendants() on directories: on a plain file (.DS_Store,
+            // the `Icon\r` file) it skips the rest of the enclosing folder instead.
             for case let url as URL in enumerator {
+                let isDir = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
                 if url.pathExtension == "app" {
-                    add(url)
-                    enumerator.skipDescendants()
-                } else if enumerator.level >= 2 {
-                    // Look one folder deep (e.g. /Applications/Setapp), no further.
+                    if !url.lastPathComponent.hasPrefix(".") { add(url) }
+                    if isDir { enumerator.skipDescendants() }
+                } else if isDir && (url.lastPathComponent.hasPrefix(".") || enumerator.level >= 2) {
+                    // Skip dot-folders, and look only one folder deep (e.g. /Applications/Setapp).
                     enumerator.skipDescendants()
                 }
             }
